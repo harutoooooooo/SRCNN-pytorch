@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+from skimage.metrics import structural_similarity as ssim
 
 
 def convert_rgb_to_y(img):
@@ -49,6 +50,21 @@ def convert_ycbcr_to_rgb(img):
 
 def calc_psnr(img1, img2):
     return 10. * torch.log10(1. / torch.mean((img1 - img2) ** 2))
+
+def calc_ssim(img1, img2):
+    """
+    Calculate SSIM (Structural Similarity Index) between two images.
+    Assumes that the images are in the range [0, 1].
+    """
+    # Convert tensors to numpy arrays if needed
+    if isinstance(img1, torch.Tensor):
+        img1 = img1.cpu().numpy()
+    if isinstance(img2, torch.Tensor):
+        img2 = img2.cpu().numpy()
+    
+    # Calculate SSIM
+    ssim_value = ssim(img1, img2, data_range=img2.max() - img2.min())
+    return ssim_value
 
 
 class AverageMeter(object):
